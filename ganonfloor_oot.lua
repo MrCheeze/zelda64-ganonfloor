@@ -81,7 +81,9 @@ for zi=0,colCtx_subdivAmountZ-1 do
 				
 				nodeIndex = mainmemory.read_u16_be(colCtx_lookupTbl - 0x80000000 + 6*i + 2*j)
 				
-				while nodeIndex ~= 0xFFFF do
+				already_seen_nodes = {}
+				
+				while nodeIndex ~= 0xFFFF and already_seen_nodes[nodeIndex] == nil do
 					polyId = mainmemory.read_u16_be(colCtx_polyNodes_tbl - 0x80000000 + 4*nodeIndex)
 					polySurfaceTypeId = mainmemory.read_u16_be(colCtx_colHeader_polyList - 0x80000000 + 0x10*polyId)
 					surfaceExitIndex = mainmemory.readbyte(colCtx_colHeader_surfaceTypeList - 0x80000000 + 8*polySurfaceTypeId + 2) & 0x1F
@@ -112,10 +114,11 @@ for zi=0,colCtx_subdivAmountZ-1 do
 						tri_max_z = math.max(vertAZ,vertBZ,vertCZ)
 						
 						if tri_max_x >= sector_min_x and tri_min_x <= sector_max_x and tri_max_y >= sector_min_y and tri_min_y <= sector_max_y and tri_max_z >= sector_min_z and tri_min_z <= sector_max_z then
-							s=s..string.format("exit %04X - nodeIndex %04X polyId %04X surfaceType %04X - poly (%d,%d,%d), (%d,%d,%d), (%d,%d,%d) - sector [%s,%s],[%s,%s],[%s,%s]\n", exitValue, nodeIndex, polyId, polySurfaceTypeId, vertAX,vertAY,vertAZ, vertBX,vertBY,vertBZ, vertCX,vertCY,vertCZ, sector_min_x,sector_max_x, sector_min_y,sector_max_y, sector_min_z,sector_max_z)
+							s=s..string.format("exit %04X - nodeIndex %04X polyId %04X surfaceType %04X - poly (%d,%d,%d), (%d,%d,%d), (%d,%d,%d) (center (%f,%f,%f))- sector [%s,%s],[%s,%s],[%s,%s]\n", exitValue, nodeIndex, polyId, polySurfaceTypeId, vertAX,vertAY,vertAZ, vertBX,vertBY,vertBZ, vertCX,vertCY,vertCZ, (vertAX+vertBX+vertCX)/3,(vertAY+vertBY+vertCY)/3,(vertAZ+vertBZ+vertCZ)/3, sector_min_x,sector_max_x, sector_min_y,sector_max_y, sector_min_z,sector_max_z)
 						end
 					end
 					
+					already_seen_nodes[nodeIndex] = true
 					nodeIndex = mainmemory.read_u16_be(colCtx_polyNodes_tbl - 0x80000000 + 4*nodeIndex + 2)
 				end
 			end

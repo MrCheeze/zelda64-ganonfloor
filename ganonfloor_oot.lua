@@ -1,5 +1,13 @@
-addr_colCtx = 0x1C9520 -- NTSC 1.2
-addr_exitList = 0x1DAB64 -- NTSC 1.2
+if gameinfo.getromhash() == '0769C84615422D60F16925CD859593CDFA597F84' then -- J GC MQDisc
+	addr_globalContext = 0x1C9660
+elseif gameinfo.getromhash() == 'DD14E143C4275861FE93EA79D0C02E36AE8C6C2F' then -- J MQ
+	addr_globalContext = 0x1C9660
+else -- NTSC 1.2
+	addr_globalContext = 0x1C8D60
+end
+
+addr_colCtx = addr_globalContext + 0x7C0
+addr_exitList = addr_globalContext + 0x11E04
 
 exitList = mainmemory.read_u32_be(addr_exitList)
 
@@ -114,7 +122,7 @@ for zi=0,colCtx_subdivAmountZ-1 do
 						tri_max_z = math.max(vertAZ,vertBZ,vertCZ)
 						
 						if tri_max_x >= sector_min_x and tri_min_x <= sector_max_x and tri_max_y >= sector_min_y and tri_min_y <= sector_max_y and tri_max_z >= sector_min_z and tri_min_z <= sector_max_z then
-							s=s..string.format("exit %04X - nodeIndex %04X polyId %04X surfaceType %04X - poly (%d,%d,%d), (%d,%d,%d), (%d,%d,%d) (center (%f,%f,%f))- sector [%s,%s],[%s,%s],[%s,%s]\n", exitValue, nodeIndex, polyId, polySurfaceTypeId, vertAX,vertAY,vertAZ, vertBX,vertBY,vertBZ, vertCX,vertCY,vertCZ, (vertAX+vertBX+vertCX)/3,(vertAY+vertBY+vertCY)/3,(vertAZ+vertBZ+vertCZ)/3, sector_min_x,sector_max_x, sector_min_y,sector_max_y, sector_min_z,sector_max_z)
+							s=s..string.format("exit %04X - nodeIndex %04X polyId %04X surfaceType %04X - poly (%d,%d,%d), (%d,%d,%d), (%d,%d,%d) (center (%f,%f,%f)) - sector [%s,%s],[%s,%s],[%s,%s]\n", exitValue, nodeIndex, polyId, polySurfaceTypeId, vertAX,vertAY,vertAZ, vertBX,vertBY,vertBZ, vertCX,vertCY,vertCZ, (vertAX+vertBX+vertCX)/3,(vertAY+vertBY+vertCY)/3,(vertAZ+vertBZ+vertCZ)/3, sector_min_x,sector_max_x, sector_min_y,sector_max_y, sector_min_z,sector_max_z)
 						end
 					end
 					
